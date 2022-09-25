@@ -36,7 +36,7 @@ A one-day exploration of python models in dbt (still in beta) and how a dbt pack
 
 1. Create a virtual environment, preferably using python 3.8+.
 1. Run:
-    ````bash
+    ```bash
     pip install -r requirements.txt
     ```
 1. Copy `.envrc.example` to `.envrc` and populate with credentials/configs for Databricks and Snowflake.
