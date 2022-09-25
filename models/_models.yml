@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: dbt_currency_exchange_rates
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - currency_code
+            - date
+    config:
+
+      # Appears to be a bug in dbt, only the last config is passed to the python model, concating configs to get around this
+      # lookback_days: "{{ var('dbt_currency_exchange_rates_lookback_days', 7) }}"
+      # schema: "{{ var('dbt_currency_exchange_rates_schema', 'base') }}"
+      # profile_type: "{{ target.type }}" 
+      # concat_config: "{{ var('dbt_currency_exchange_rates_lookback_days', 7) }}" ~ "|" ~ "{{ target.type }}"
+
+      config_data: "{{ target.type }} | {{ var('dbt_currency_exchange_rates_lookback_days', 7) }}"

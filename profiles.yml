@@ -1,0 +1,20 @@
+dbt_currency_exchange_rates:
+  target: databricks
+  outputs:
+    databricks:
+      type: databricks
+      catalog: null
+      host: "{{ env_var('DATABRICKS_HOST') }}"
+      http_path: "{{ env_var('DATABRICKS_HTTP_PATH') }}"
+      schema: "{{ env_var('DATABRICKS_SCHEMA') }}"
+      threads: 8
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE') }}"
+      schema: "{{ env_var('SNOWFLAKE_SCHEMA') }}"
+      connect_timeout: 1
