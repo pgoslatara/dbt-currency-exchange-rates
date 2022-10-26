@@ -1,4 +1,35 @@
 from datetime import datetime, timedelta
+import json
+from typing import Dict
+
+
+def get_schema(profile_type: str):
+    if profile_type == "databricks":
+        from pyspark.sql.types import StructField, StructType, StringType, FloatType
+    elif profile_type == "snowflake":
+        from snowflake.snowpark.types import (
+            StructField,
+            StructType,
+            StringType,
+            FloatType,
+        )
+
+    return StructType(
+        [
+            StructField("date", StringType(), False),
+            StructField("currency_code", StringType(), False),
+            StructField("rate", FloatType(), False),
+        ]
+    )
+
+
+def prep_dict_for_dataframe(data: Dict) -> Dict:
+    rates = []
+    for d in list(data["rates"].keys()):
+        for k, v in data["rates"][d].items():
+            rates.append({"date": d, "currency_code": k, "rate": float(v)})
+
+    return rates
 
 
 def model(dbt, session):
@@ -6,9 +37,9 @@ def model(dbt, session):
     # test_config = str(dbt.config.get("test_config"))
     # lookback_days, profile_type, test_config = dbt.config.get("lookback_days", "profile_type", "test_config")
 
-    profile_type = str(dbt.config.get("profile_type"))
+    # profile_type = str(dbt.config.get("profile_type"))
 
-    profile_type, lookback_days = [
+    profile_type, lookback_days, starsnow_functions_schema = [
         x.strip() for x in dbt.config.get("config_data").split("|")
     ]
 
@@ -27,47 +58,45 @@ def model(dbt, session):
 
     if profile_type == "databricks":
         import requests
-        from pyspark.sql.types import StructField, StructType, StringType, FloatType
 
         r = requests.get(
             f"https://api.exchangerate.host/timeseries?start_date={start}&end_date={end}"
         )
-
-        rates = []
-        for d in list(r.json()["rates"].keys()):
-            for k, v in r.json()["rates"][d].items():
-                rates.append({"date": d, "currency_code": k, "rate": float(v)})
-
-        schema = StructType(
-            [
-                StructField("date", StringType(), False),
-                StructField("currency_code", StringType(), False),
-                StructField("rate", FloatType(), False),
-            ]
-        )
-
-        df = spark.createDataFrame(rates, schema)
+        df = spark.createDataFrame(prep_dict_for_dataframe(r.json()), get_schema(profile_type))
 
     elif profile_type == "snowflake":
-        from snowflake.snowpark.types import (
-            StructField,
-            StructType,
-            StringType,
-            FloatType,
+        from snowflake.snowpark.functions import call_udf, col
+
+        # Snowpark does not support external http calls: https://community.snowflake.com/s/question/0D53r0000BeAAgHCQW/error-in-calling-rest-api-endpoint-using-requests-get-post-method-in-snowpark-python-stored-procedure
+        # As a proof-of-concept, the STARSNOW_REQUEST function can be installed and used to perform http calls: https://github.com/starschema/starsnow_request#deploying
+
+        starsnow_params = session.create_dataframe(
+            [
+                [
+                    f"https://api.exchangerate.host/timeseries?start_date={start}&end_date={end}",
+                    {
+                        "method": "get",
+                    },
+                ]
+            ],
+            schema=["url", "params"],
         )
 
-        # Snowpark does not support externall http calls: https://community.snowflake.com/s/question/0D53r0000BeAAgHCQW/error-in-calling-rest-api-endpoint-using-requests-get-post-method-in-snowpark-python-stored-procedure
-        # As a proof-of-concept, just going to send some hard-codded values to Snowflake
+        df = starsnow_params.select(
+            call_udf(
+                f"{starsnow_functions_schema}.STARSNOW_REQUEST",
+                col("url"),
+                col("params"),
+            ).as_("response")
+        )
+        rates_dict = json.loads(
+            df.select("response").collect()[0].as_dict()["RESPONSE"]
+        )["data"]
 
-        # r = requests.get(f"https://api.exchangerate.host/timeseries?start_date={start}&end_date={end}")
+        df = session.create_dataframe(
+            prep_dict_for_dataframe(rates_dict), get_schema(profile_type)
+        )
 
-        rates = [
-            ["2022-09-16", "AED", 3.677051],
-            ["2022-09-16", "AFN", 89.086493],
-            ["2022-09-16", "ALL", 116.612837],
-        ]
-
-        df = session.create_dataframe(rates, schema=["date", "currency_code", "rate"])
     else:
         raise ValueError("Only Databricks and Snowflake are supported.")
 
