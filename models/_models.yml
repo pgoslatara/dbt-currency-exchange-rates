@@ -8,11 +8,7 @@ models:
             - currency_code
             - date
     config:
-
-      # Appears to be a bug in dbt, only the last config is passed to the python model, concating configs to get around this
-      # lookback_days: "{{ var('dbt_currency_exchange_rates_lookback_days', 7) }}"
-      # schema: "{{ var('dbt_currency_exchange_rates_schema', 'base') }}"
-      # profile_type: "{{ target.type }}" 
-      # concat_config: "{{ var('dbt_currency_exchange_rates_lookback_days', 7) }}" ~ "|" ~ "{{ target.type }}"
-
-      config_data: "{{ target.type }} | {{ var('dbt_currency_exchange_rates_lookback_days', 7) }} | {{ var('starsnow_functions_schema', 'PUBLIC') }}"
+      lookback_days: "{{ var('dbt_currency_exchange_rates_lookback_days', 7) }}"
+      schema: "{{ var('dbt_currency_exchange_rates_schema', 'base') }}"
+      profile_type: "{{ target.type }}" 
+      starsnow_schema: "{{ var('starsnow_functions_schema', 'PUBLIC') }}"

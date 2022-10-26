@@ -33,16 +33,10 @@ def prep_dict_for_dataframe(data: Dict) -> Dict:
 
 
 def model(dbt, session):
-    # lookback_days = dbt.config.get("lookback_days")
-    # test_config = str(dbt.config.get("test_config"))
-    # lookback_days, profile_type, test_config = dbt.config.get("lookback_days", "profile_type", "test_config")
-
-    # profile_type = str(dbt.config.get("profile_type"))
-
-    profile_type, lookback_days, starsnow_functions_schema = [
-        x.strip() for x in dbt.config.get("config_data").split("|")
-    ]
-
+    profile_type = str(dbt.config.get("profile_type"))
+    lookback_days = str(dbt.config.get("lookback_days"))
+    starsnow_schema = str(dbt.config.get("starsnow_schema"))
+    
     dbt.config(
         materialized="incremental",
         packages=["requests"],
@@ -84,7 +78,7 @@ def model(dbt, session):
 
         df = starsnow_params.select(
             call_udf(
-                f"{starsnow_functions_schema}.STARSNOW_REQUEST",
+                f"{starsnow_schema}.STARSNOW_REQUEST",
                 col("url"),
                 col("params"),
             ).as_("response")

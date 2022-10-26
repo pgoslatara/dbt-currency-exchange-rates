@@ -1,4 +1,4 @@
-A ~~one-day~~ multiple-day exploration of python models in dbt (still in beta) and how a dbt package can cater to multiple databases.
+A ~~one-day~~ multiple-day exploration of python models in dbt ~~(still in beta)~~ and how a dbt package can cater to multiple databases.
 
 ## Objectives
 
@@ -11,7 +11,7 @@ A ~~one-day~~ multiple-day exploration of python models in dbt (still in beta) a
 - Databricks is relatively simple to support.
 - Snowflake does not allow external http requests (or non-Anaconda packages) yet, see [here](https://community.snowflake.com/s/question/0D53r0000BeAAgHCQW/error-in-calling-rest-api-endpoint-using-requests-get-post-method-in-snowpark-python-stored-procedure), although a workaround is available, detailed below.
 - BigQuery was not attempted.
-- Python models in dbt still have a number of rough edges (lack of logging/printing options, bug in passing config values to model, etc.).
+- Python models in dbt still have a number of rough edges (lack of logging/printing options~~, bug in passing config values to model~~, etc.).
 
 
 ## Additional setup required for Snowflake
