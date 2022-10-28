@@ -1,6 +1,18 @@
 dbt_currency_exchange_rates:
   target: databricks
   outputs:
+    bigquery:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('BIGQUERY_PROJECT') }}"
+      dataset: "{{ env_var('BIGQUERY_DATASET') }}"
+      keyfile: "{{ env_var('BIGQUERY_KEYFILE') }}"
+      timeout_seconds: 300
+      location: "{{ env_var('BIGQUERY_LOCATION') }}"
+      priority: interactive
+      dataproc_region: "{{ env_var('DATAPROC_REGION') }}"
+      gcs_bucket: "{{ env_var('GCS_BUCKET') }}"
+      dataproc_cluster_name: "{{ env_var('DATAPROC_CLUSTER_NAME') }}"
     databricks:
       type: databricks
       catalog: null
