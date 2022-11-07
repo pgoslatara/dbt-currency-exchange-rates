@@ -14,9 +14,16 @@ A ~~one-day~~ multiple-day exploration of python models in dbt ~~(still in beta)
 - Python models in dbt still have a number of rough edges (lack of logging/printing options~~, bug in passing config values to model~~, etc.).
 
 
+## Additional setup required for BigQuery
+
+1. Create or use an existing Dataproc cluster with the S[park BigQuery connector](https://github.com/GoogleCloudDataproc/initialization-actions/tree/master/connectors#bigquery-connectors) initialization action.
+
 ## Additional setup required for Snowflake
 
+1. Enable Anaconda python packages as described [here](https://docs.snowflake.com/en/developer-guide/udf/python/udf-python-packages.html#using-third-party-packages-from-anaconda).
+
 1. Install the STARSNOW_REQUEST functions as detailed [here](https://github.com/starschema/starsnow_request#deploying).
+
 ## How to use this package in your dbt project
 
 1. Create a `packages.yml` file in your dbt directory.
