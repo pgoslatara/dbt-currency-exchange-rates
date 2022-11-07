@@ -4,7 +4,7 @@ from typing import Dict
 
 
 def get_schema(profile_type: str):
-    if profile_type == "databricks":
+    if profile_type in ("bigquery", "databricks"):
         from pyspark.sql.types import StructField, StructType, StringType, FloatType
     elif profile_type == "snowflake":
         from snowflake.snowpark.types import (
@@ -36,7 +36,7 @@ def model(dbt, session):
     profile_type = str(dbt.config.get("profile_type"))
     lookback_days = str(dbt.config.get("lookback_days"))
     starsnow_schema = str(dbt.config.get("starsnow_schema"))
-    
+
     dbt.config(
         materialized="incremental",
         packages=["requests"],
@@ -50,7 +50,7 @@ def model(dbt, session):
 
     end = datetime.utcnow().strftime("%Y-%m-%d")
 
-    if profile_type == "databricks":
+    if profile_type in ("bigquery", "databricks"):
         import requests
 
         r = requests.get(
@@ -92,6 +92,6 @@ def model(dbt, session):
         )
 
     else:
-        raise ValueError("Only Databricks and Snowflake are supported.")
+        raise ValueError("Only BigQuery, Databricks and Snowflake are supported.")
 
     return df
