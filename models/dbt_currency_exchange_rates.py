@@ -37,16 +37,10 @@ def model(dbt, session):
     lookback_days = str(dbt.config.get("lookback_days"))
     starsnow_schema = str(dbt.config.get("starsnow_schema"))
 
-    # if profile_type == "bigquery":
-    #     dbt.config(
-    #         submission_method="cluster"
-    #     )
-
     dbt.config(
         materialized="incremental",
         packages=["requests"],
         unique_key=["currency_code", "date"],
-        # submission_method="cluster"
     )
 
     if dbt.is_incremental:

@@ -5,4 +5,5 @@ logs/
 .envrc
 .user.yml
 *.json
+*.pem
 venv*
