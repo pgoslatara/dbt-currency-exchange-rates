@@ -8,8 +8,8 @@ models:
             - currency_code
             - date
     config:
-      submission_method: "{{ var('dbt_currency_exchange_rates_dataproc_submission_method', 'cluster') if target.type == 'bigquery' else 'all_purpose_cluster' }}"
       lookback_days: "{{ var('dbt_currency_exchange_rates_lookback_days', 7) }}"
-      schema: "{{ var('dbt_currency_exchange_rates_schema', 'base') }}"
       profile_type: "{{ target.type }}" 
+      schema: "{{ var('dbt_currency_exchange_rates_schema', 'dbt_currency_exchange_rates') }}"
+      submission_method: "{{ var('dbt_currency_exchange_rates_dataproc_submission_method', 'cluster') if target.type == 'bigquery' else 'all_purpose_cluster' }}"
       starsnow_schema: "{{ var('starsnow_functions_schema', 'PUBLIC') }}" # Snowflake only

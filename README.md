@@ -22,7 +22,7 @@ A ~~one-day~~ multiple-day exploration of python models in dbt ~~(still in beta)
 
 1. Enable Anaconda python packages as described [here](https://docs.snowflake.com/en/developer-guide/udf/python/udf-python-packages.html#using-third-party-packages-from-anaconda).
 
-1. Install the STARSNOW_REQUEST functions as detailed [here](https://github.com/starschema/starsnow_request#deploying).
+1. Install the STARSNOW_REQUEST functions as detailed [here](https://github.com/starschema/starsnow_request#deploying), note that this requires an S3 bucket.
 
 ## How to use this package in your dbt project
 
@@ -58,6 +58,10 @@ A ~~one-day~~ multiple-day exploration of python models in dbt ~~(still in beta)
     source .envrc
     ```
 1. Make any desired changes and run with the appropriate target:
+    ```bash
+    dbt build --target bigquery
+    ```
+    Or:
     ```bash
     dbt build --target databricks
     ```
