@@ -1,2 +1,2 @@
 pyspark==3.3.1
-snowflake-connector-python[pandas]==2.7.12
+snowflake-connector-python[pandas]==2.9.0
